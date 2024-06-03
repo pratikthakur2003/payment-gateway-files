@@ -1,4 +1,4 @@
-class ModalForm {
+class NexPay {
 
   open(data) {
     const blurOverlay = document.createElement("div");
@@ -92,7 +92,7 @@ class ModalForm {
     input.style.marginTop = "5px";
     input.style.boxSizing = "border-box";
     input.style.width = "100%";
-    input.value = value; // Set initial value
+    input.value = value;
 
     label.appendChild(input);
     return label;
