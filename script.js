@@ -1,79 +1,129 @@
-document.addEventListener('DOMContentLoaded', function() {
-    const button = document.querySelector('.beautiful-button');
-    button.addEventListener('click', function() {
-        // Create blur overlay
-        const blurOverlay = document.createElement('div');
-        blurOverlay.style.position = 'fixed';
-        blurOverlay.style.top = '0';
-        blurOverlay.style.left = '0';
-        blurOverlay.style.width = '100%';
-        blurOverlay.style.height = '100%';
-        blurOverlay.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
-        blurOverlay.style.zIndex = '999';
-        blurOverlay.style.backdropFilter = 'blur(5px)';
+class ModalForm {
 
-        // Create modal elements
-        const modalOverlay = document.createElement('div');
-        modalOverlay.style.position = 'fixed';
-        modalOverlay.style.top = '0';
-        modalOverlay.style.left = '0';
-        modalOverlay.style.width = '100%';
-        modalOverlay.style.height = '100%';
-        modalOverlay.style.display = 'flex';
-        modalOverlay.style.justifyContent = 'center';
-        modalOverlay.style.alignItems = 'center';
-        modalOverlay.style.zIndex = '1000';
+  open(data) {
+    const blurOverlay = document.createElement("div");
+    blurOverlay.style.position = "fixed";
+    blurOverlay.style.top = "0";
+    blurOverlay.style.left = "0";
+    blurOverlay.style.width = "100%";
+    blurOverlay.style.height = "100%";
+    blurOverlay.style.backgroundColor = "rgba(0, 0, 0, 0.5)";
+    blurOverlay.style.zIndex = "999";
+    blurOverlay.style.backdropFilter = "blur(5px)";
 
-        const modal = document.createElement('div');
-        modal.style.backgroundColor = 'white';
-        modal.style.padding = '20px';
-        modal.style.borderRadius = '10px';
-        modal.style.boxShadow = '0 5px 15px rgba(0, 0, 0, 0.3)';
+    const modalOverlay = document.createElement("div");
+    modalOverlay.style.position = "fixed";
+    modalOverlay.style.top = "0";
+    modalOverlay.style.left = "0";
+    modalOverlay.style.width = "100%";
+    modalOverlay.style.height = "100%";
+    modalOverlay.style.display = "flex";
+    modalOverlay.style.justifyContent = "center";
+    modalOverlay.style.alignItems = "center";
+    modalOverlay.style.zIndex = "1000";
 
+    const modal = document.createElement("div");
+    modal.style.backgroundColor = "white";
+    modal.style.padding = "20px";
+    modal.style.borderRadius = "10px";
+    modal.style.boxShadow = "0 5px 15px rgba(0, 0, 0, 0.3)";
 
-        const inputBox = document.createElement('input');
-        inputBox.type = 'text';
-        inputBox.style.marginBottom = '10px';
-        inputBox.style.padding = '10px';
-        inputBox.style.width = '100%';
-        
-        inputBox.style.boxSizing = 'border-box';
+    const form = document.createElement("form");
+    form.style.display = "flex";
+    form.style.flexDirection = "column";
 
-        const submitButton = document.createElement('button');
-        submitButton.innerText = 'Submit';
-        submitButton.style.padding = '10px 20px';
-        submitButton.style.backgroundColor = '#007bff';
-        submitButton.style.color = 'white';
-        submitButton.style.border = 'none';
-        submitButton.style.borderRadius = '5px';
-        submitButton.style.cursor = 'pointer';
-        
-        const cancelButton = document.createElement('button');
-        cancelButton.innerText = 'Cancel';
-        cancelButton.style.padding = '10px 20px';
-        cancelButton.style.backgroundColor = '#007bff';
-        cancelButton.style.color = 'white';
-        cancelButton.style.border = 'none';
-        cancelButton.style.borderRadius = '5px';
-        cancelButton.style.cursor = 'pointer';
-        cancelButton.style.marginLeft = '10px';
+    const nameInput = this.createInput(
+      "Name",
+      "text",
+      data && data.name ? data.name : ""
+    );
+    const amountInput = this.createInput(
+      "Amount",
+      "number",
+      data && data.amount ? data.amount : ""
+    );
+    const phoneInput = this.createInput(
+      "Phone No",
+      "tel",
+      data && data.phoneno ? data.phoneno : ""
+    );
 
-        // Append elements to modal
-        modal.appendChild(inputBox);
-        modal.appendChild(submitButton);
-        modal.appendChild(cancelButton);
-        modalOverlay.appendChild(modal);
-        document.body.appendChild(blurOverlay);
-        document.body.appendChild(modalOverlay);
+    const submitButton = this.createButton("Submit", "submit");
+    const cancelButton = this.createButton("Cancel", "button");
 
-        // Add event listener for submit button
-        submitButton.addEventListener('click', function() {
-                console.log(inputBox.value);
-        });
+    form.appendChild(nameInput);
+    form.appendChild(amountInput);
+    form.appendChild(phoneInput);
+    form.appendChild(submitButton);
+    form.appendChild(cancelButton);
 
-        cancelButton.addEventListener('click', () => {
-            document.body.removeChild(modalOverlay);
-            document.body.removeChild(blurOverlay);
-        })
+    modal.appendChild(form);
+
+    document.body.appendChild(blurOverlay);
+    document.body.appendChild(modalOverlay);
+    modalOverlay.appendChild(modal);
+
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const formData = {
+        name: nameInput.querySelector("input").value,
+        amount: amountInput.querySelector("input").value,
+        phone: phoneInput.querySelector("input").value,
+      };
+      this.handleSubmit(formData);
+      this.closeModal(modalOverlay, blurOverlay);
     });
-});
+
+    cancelButton.addEventListener("click", () => {
+      this.closeModal(modalOverlay, blurOverlay);
+    });
+  }
+
+  createInput(labelText, type, value = "") {
+    const label = document.createElement("label");
+    label.style.marginBottom = "10px";
+    label.style.display = "flex";
+    label.style.flexDirection = "column";
+    label.innerText = labelText;
+
+    const input = document.createElement("input");
+    input.type = type;
+    input.style.padding = "10px";
+    input.style.marginTop = "5px";
+    input.style.boxSizing = "border-box";
+    input.style.width = "100%";
+    input.value = value; // Set initial value
+
+    label.appendChild(input);
+    return label;
+  }
+
+  createButton(buttonText, type) {
+    const button = document.createElement("button");
+    button.innerText = buttonText;
+    button.type = type;
+    button.style.padding = "10px 20px";
+    button.style.backgroundColor = "#007bff";
+    button.style.color = "white";
+    button.style.border = "none";
+    button.style.borderRadius = "5px";
+    button.style.cursor = "pointer";
+    button.style.marginTop = "10px";
+
+    if (buttonText === "Cancel") {
+      button.style.backgroundColor = "#6c757d";
+      button.style.marginLeft = "10px";
+    }
+
+    return button;
+  }
+
+  handleSubmit(formData) {
+    console.log(formData);
+  }
+
+  closeModal(modalOverlay, blurOverlay) {
+    document.body.removeChild(modalOverlay);
+    document.body.removeChild(blurOverlay);
+  }
+}
