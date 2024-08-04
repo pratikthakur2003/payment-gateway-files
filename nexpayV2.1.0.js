@@ -14,23 +14,28 @@
       top: 0;
       width: 100%;
       height: 100%;
+      backdrop-filter: blur(10px);
       // overflow: auto; /* Enable scroll if needed */
       background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
   }
   .nexpay-modal-content {
       position: relative;
+      // display: flex;
+      // justify-content: center;
+      // align-items: center;
       background-color: #fefefe;
       margin: 10% auto; /* 10% from the top and centered */
       padding: 0;
       border: 1px solid #888;
-      width: 35%; /* Could be more or less, depending on screen size */
-      min-width: 350px;
-      height: 70%; /* Adjust as necessary */
-      min-height: 600px;
+      width: 500px; /* Could be more or less, depending on screen size */
+      // min-width: 350px;
+      height: 600px; /* Adjust as necessary */
+      // min-height: 65%;
       box-shadow: 0 5px 15px rgba(0,0,0,0.3);
       animation-name: animatetop;
       animation-duration: 0.4s;
       border-radius: 10px;
+      
   }
   @keyframes animatetop {
       from {top:-300px; opacity:0}
@@ -56,6 +61,7 @@
       height: 100%;
       border: none;
       border-radius: 10px;
+      
   }
   .nexpay-loading {
         position: absolute;
@@ -66,16 +72,57 @@
         color: #888;
         z-index: 1000;
     }
-  // @media (max-width: 600px) {
-  //       .nexpay-modal-content {
-  //         height: 500px;
-  //         backgound-color: black;
-  //       }
+  @media (max-width: 600px) and (min-height: 721px){
+        .nexpay-modal-content {
+          height: 600px;
+          width: 350px;
+          margin: 30% auto;
+          // backgound-color: black;
+        }
         
-  //       iframe {
-  //         backgound-color: black;
-  //       }
-  //   }
+        // iframe {
+        //   backgound-color: black;
+        // }
+    }
+
+  @media (max-width: 600px) and (max-height: 720px){
+        .nexpay-modal-content {
+          height: 600px;
+          width: 350px;
+          margin: 10% auto;
+          // backgound-color: black;
+        }
+        
+        // iframe {
+        //   backgound-color: black;
+        // }
+    }
+
+  @media (max-width: 600px) and (min-height: 900px){
+        .nexpay-modal-content {
+          height: 610px;
+          width: 400px;
+          margin: 30% auto;
+          // backgound-color: black;
+        }
+        
+        // iframe {
+        //   backgound-color: black;
+        // }
+    }
+
+  @media (max-height: 600px){
+        .nexpay-modal-content {
+          height: 550px;
+          width: 350px;
+          margin: 2% auto;
+          // backgound-color: black;
+        }
+        
+        // iframe {
+        //   backgound-color: black;
+        // }
+    }
   `;
 
   // Append the CSS to the head of the document
@@ -87,7 +134,8 @@
   window.nexpay = {
     open: function (options) {
       // Make the POST request to the process_payment endpoint
-      fetch("http://127.0.0.1:5000/process_payment/", {
+      // fetch("https://pratikthakur.pythonanywhere.com/nexpay/api/process_payment", {
+      fetch("http://localhost:5000/nexpay/api/process_payment", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -96,27 +144,24 @@
           apiKey: options.apiKey,
           amount: options.amount,
           currency: options.currency,
-          orderID: options.orderID
+          orderID: options.orderID,
         }),
-
       })
         .then((response) => response.json())
         .then((data) => {
           if (data) {
-            // Display the modal with payment information
             showModal(data.payment_url);
           } else {
-            alert("Payment processing failed: " + data.message);
+            alert("Payment processing failed");
           }
         })
         .catch((error) => {
           console.error("Error:", error);
           alert("An error occurred while processing the payment.");
         });
-
-      // showModal("https://pratikthakur.pythonanywhere.com/static/payments.html")
     },
   };
+  
 
   function showModal(paymentUrl) {
     // Create the modal elements
